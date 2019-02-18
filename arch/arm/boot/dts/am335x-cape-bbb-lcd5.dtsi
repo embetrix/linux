@@ -45,6 +45,11 @@
 		>;
 	};
 
+	btn_pins: pinmux_btn_pins {
+		pinctrl-single,pins = <
+			0x030 0x2f
+		>;
+	};
 	user_leds_s1: user_leds_s1 {
 		pinctrl-single,pins = <
 			0x028 0x7
@@ -148,6 +153,24 @@
 			100
 		>;
 		default-brightness-level = <100>;
+	};
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&btn_pins>;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		button@1 {
+			debounce_interval = <50>;
+			linux,code = <0x13b>;
+			label = "start";
+			gpios = <&gpio1 12 0x1>;
+			gpio-key,wakeup;
+			autorepeat;
+		};
 	};
 
 	gpio-leds-cape {
