@@ -1,0 +1,300 @@
+// SPDX-License-Identifier: GPL-2.0-only
+/*
+ * Copyright (C) 2022 Embexus - https://embexus.com
+ */
+/dts-v1/;
+
+#include "am33xx.dtsi"
+#include "am335x-bone-common.dtsi"
+#include "am335x-boneblack-common.dtsi"
+
+
+#include <dt-bindings/board/am335x-bbw-bbb-base.h>
+
+/ {
+	model = "AM335x Megasonic";
+	compatible = "ti,am335x-megasonic", "ti,am33xx";
+
+	gpio_keys {
+		compatible = "gpio-keys";
+		pinctrl-names = "default";
+		pinctrl-0 = <&btn_pins>;
+
+		#address-cells = <1>;
+		#size-cells = <0>;
+
+		button@1 {
+			debounce_interval = <50>;
+			linux,code = <31>;
+			label = "start";
+			gpios = <&gpio1 12 0x1>;
+			gpio-key,wakeup;
+			autorepeat;
+		};
+	};
+
+	gpio-leds-cape {
+		compatible = "gpio-leds";
+		pinctrl-names = "default";
+
+		pinctrl-0 = <&user_leds_s1>;
+
+		start-led {
+			label = "start:white:usr4";
+			gpios = <&gpio0 26 0>;
+			linux,default-trigger = "default-on";
+			default-state = "on";
+		};
+
+		enable-led {
+			label = "enable:green:usr5";
+			gpios = <&gpio1 15 0>;
+			linux,default-trigger = "default-on";
+			default-state = "on";
+		};
+
+		alarm-led {
+			label = "alarm:red:usr6";
+			gpios = <&gpio1 14 0>;
+			linux,default-trigger = "default-on";
+			default-state = "on";
+		};
+	};
+
+	backlight {
+		status = "okay";
+		compatible = "pwm-backlight";
+		pwms = <&ehrpwm1 0 500000 0>;
+		brightness-levels = <
+			0  1  2  3  4  5  6  7  8  9
+			10 11 12 13 14 15 16 17 18 19
+			20 21 22 23 24 25 26 27 28 29
+			30 31 32 33 34 35 36 37 38 39
+			40 41 42 43 44 45 46 47 48 49
+			50 51 52 53 54 55 56 57 58 59
+			60 61 62 63 64 65 66 67 68 69
+			70 71 72 73 74 75 76 77 78 79
+			80 81 82 83 84 85 86 87 88 89
+			90 91 92 93 94 95 96 97 98 99
+			100
+		>;
+		default-brightness-level = <80>;
+	};
+
+	panel: lcd_panel {
+		status = "okay";
+		compatible = "ti,tilcdc,panel";
+		pinctrl-names = "default";
+		pinctrl-0 = <&lcd_24bit_pins>;
+		panel-info {
+			ac-bias           = <255>;
+			ac-bias-intrpt    = <0>;
+			dma-burst-sz      = <16>;
+			bpp               = <16>;
+			fdd               = <0x80>;
+			sync-edge         = <0>;
+			sync-ctrl         = <1>;
+			raster-order      = <0>;
+			fifo-th           = <0>;
+		};
+
+		display-timings {
+			native-mode = <&timing0>;
+			/* Settings for ThreeFive S9700RTWV35TR / LCD7 cape: */
+			timing0: 800x480 {
+				clock-frequency = <30000000>;
+				hactive = <800>;
+				vactive = <480>;
+				hfront-porch = <40>;
+				hback-porch = <40>;
+				hsync-len = <48>;
+				vback-porch = <30>;
+				vfront-porch = <13>;
+				vsync-len = <3>;
+				hsync-active = <0>;
+				vsync-active = <0>;
+				de-active = <1>;
+				pixelclk-active = <0>;
+			};
+		};
+	};
+};
+
+&am33xx_pinmux {
+
+	i2c2_pins: pinmux_i2c2_pins {
+		pinctrl-single,pins = <
+			BONE_P9_20 0x73 /* (SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE3) uart1_ctsn.i2c2_sda */
+			BONE_P9_19 0x73 /* (SLEWCTRL_SLOW | PIN_INPUT_PULLUP | MUX_MODE3) uart1_rtsn.i2c2_scl */
+		>;
+	};
+
+	uart4_pins: pinmux_uart4_pins {
+		pinctrl-single,pins = <
+			BONE_P9_11 (PIN_INPUT_PULLUP | MUX_MODE6) /* P9_11: gpmc_wait0.uart4_rxd_mux2 */
+			BONE_P9_13 (PIN_OUTPUT_PULLDOWN | MUX_MODE6) /* P9_13: gpmc_wpn.uart4_txd_mux2  */
+		>;
+	};
+
+	lcd_24bit_pins: pinmux_lcd_24bit_pins {
+		pinctrl-single,pins = <
+			BONE_P8_45 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data0.lcd_data0 */
+			BONE_P8_46 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data1.lcd_data1 */
+			BONE_P8_43 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data2.lcd_data2 */
+			BONE_P8_44 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data3.lcd_data3 */
+			BONE_P8_41 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data4.lcd_data4 */
+			BONE_P8_42 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data5.lcd_data5 */
+			BONE_P8_39 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data6.lcd_data6 */
+			BONE_P8_40 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data7.lcd_data7 */
+			BONE_P8_37 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data8.lcd_data8 */
+			BONE_P8_38 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data9.lcd_data9 */
+			BONE_P8_36 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data10.lcd_data10 */
+			BONE_P8_34 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data11.lcd_data11 */
+			BONE_P8_35 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data12.lcd_data12 */
+			BONE_P8_33 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data13.lcd_data13 */
+			BONE_P8_31 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data14.lcd_data14 */
+			BONE_P8_32 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_data15.lcd_data15 */
+			BONE_P8_27 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_vsync.lcd_vsync */
+			BONE_P8_29 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_hsync.lcd_hsync */
+			BONE_P8_28 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_pclk.lcd_pclk */
+			BONE_P8_30 (PIN_OUTPUT | MUX_MODE0) /* lcd: lcd_ac_bias_en.lcd_ac_bias_en */
+			0x1a4 0x17	/* mcasp0_fsr.gpio3_19, OUTPUT | MODE7  LCD DISEN */
+		>;
+	};
+
+	bb_lcd_pwm_backlight_pins: pinmux_bb_lcd_pwm_backlight_pins {
+		pinctrl-single,pins = <
+			BONE_P9_14 (PIN_OUTPUT_PULLDOWN | MUX_MODE6) /* gpmc_a2.ehrpwm1a */
+		>;
+	};
+
+	bb_buzzer_pwm_pins: pinmux_bb_buzzer_pwm_pins {
+		pinctrl-single,pins = <
+			BONE_P8_13(PIN_OUTPUT | MUX_MODE4) /* gpmc_ad9.ehrpwm2B */
+		>;
+	};
+
+	bb_i2c1_pins: pinmux_bb_i2c1_pins {
+		pinctrl-single,pins = <
+			0x158 0x72	// spi0_d1.i2c1_sda, SLEWCTRL_SLOW | INPUT_PULLUP | MODE2
+			0x15C 0x72	// spi0_cs0.i2c1_scl, SLEWCTRL_SLOW | INPUT_PULLUP | MODE2
+		>;
+	};
+
+	edt_ft5x06_pins: pinmux_edt_ft5x06_pins {
+		pinctrl-single,pins = <
+			0x180 0x37	// INPUT_PULLUP | MODE7
+		>;
+	};
+
+	btn_pins: pinmux_btn_pins {
+		pinctrl-single,pins = <
+			0x030 0x2f
+		>;
+	};
+
+	user_leds_s1: user_leds_s1 {
+		pinctrl-single,pins = <
+			0x028 0x7
+			0x03C 0x7
+			0x038 0x7
+		>;
+	};
+};
+
+&mmc1 {
+	vmmc-supply = <&vmmcsd_fixed>;
+};
+
+&mmc2 {
+	vmmc-supply = <&vmmcsd_fixed>;
+	pinctrl-names = "default";
+	pinctrl-0 = <&emmc_pins>;
+	bus-width = <8>;
+	status = "okay";
+};
+
+&uart4 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart4_pins>;
+	status = "okay";
+	symlink = "bone/uart/4";
+};
+
+&epwmss1 {
+	status = "okay";
+};
+
+&epwmss2 {
+	status = "okay";
+};
+
+&ehrpwm1 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&bb_lcd_pwm_backlight_pins>;
+	status = "okay";
+};
+
+&ehrpwm2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&bb_buzzer_pwm_pins>;
+	status = "okay";
+};
+
+&i2c0 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c0_pins>;
+
+	clock-frequency = <400000>;
+
+	tps: tps@24 {
+		reg = <0x24>;
+	};
+};
+
+&i2c1 {
+	status = "okay";
+	pinctrl-names = "default";
+	pinctrl-0 = <&bb_i2c1_pins>;
+
+	// configuration start
+	clock-frequency = <100000>;
+
+	#address-cells = <1>;
+	#size-cells = <0>;
+
+	polytouch: edt-ft5x06@38 {
+		compatible = "edt,edt-ft5x06";
+		reg = <0x38>;
+		pinctrl-names = "default";
+		pinctrl-0 = <&edt_ft5x06_pins>;
+		interrupt-parent = <&gpio0>;
+		interrupts = <14 2>;
+
+		touchscreen-size-y = <800>;
+		touchscreen-size-x = <480>;
+
+		touchscreen-swapped-x-y;
+		touchscreen-inverted-x;
+	};
+
+};
+
+&i2c2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&i2c2_pins>;
+
+	status = "okay";
+	clock-frequency = <100000>;
+
+	rtc@51 {
+		compatible = "nxp,pcf8563";
+		reg = <0x51>;
+	};
+
+};
+
+&lcdc {
+	status = "okay";
+};
