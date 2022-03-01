@@ -157,7 +157,8 @@ dtb-$(CONFIG_SOC_AM33XX) += \
 	am335x-sbc-t335.dtb \
 	am335x-sl50.dtb \
 	am335x-wega-rdk.dtb \
-	am335x-osd3358-sm-red.dtb
+	am335x-osd3358-sm-red.dtb \
+	am335x-boneblack-bbb-lcd5
 dtb-$(CONFIG_SOC_AM43XX) += \
 	am43x-epos-evm.dtb \
 	am437x-cm-t43.dtb \
